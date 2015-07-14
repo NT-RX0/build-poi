@@ -1,3 +1,6 @@
+#根据poi.app生成Poi-installer.dmg
+#需要MakePoi.sh脚本
+#!/bin/bash
 set -e
 
 title='Poi-installer' # dmg 文件 mount 了之后在文件系统中显示的名称
@@ -5,9 +8,7 @@ background_picture_name='poi-dmg-bg.png' # dmg 文件在 mount 了之后界面�
 application_name='poi.app' # 应用程序的名称
 # Developer ID 证书的名称（名字的一部分即可，但是需要能在 Keychain Access 中唯一定位到该证书）
 developer_id='Mother Child Studio'
-electron='Electron.app' # electron.app路径名字
-project_git='https://github.com/yudachi/poi.git'
-version='v3.0.0-beta'
+
 
 # dmg 窗口相关的一些设置，需要根据实际情况做变更
 window_left=200 # 窗口位置的 x 坐标
@@ -20,14 +21,11 @@ applications_link_top=120  # Application 文件链接在窗口中的 y 坐标
 
 # 获取到项目名称，如果自动获取的项目名称不正确，可以手动进行指定
 cd $(dirname $0)
-# project_name=`find . -name *.xcodeproj | tail -n 1 | grep -oE '\./[^\.]+' | grep -oE '[^\./]+$'`
 project_name='poi'
 # 后续需要根据 target 的名称查找最新的打包文件路径
 project_target_name=$project_name
-# 后续需要从 info 文件中获取到版本号信息
-# project_plist_filepath="./${project_name}/${project_name}-Info.plist"
-# 在这个目录下面查找 archive 包
-# archive_path=~/Library/Developer/Xcode/Archives
+version=$(head -n 1 ${project_name}/gulpfile.coffee|cut -f 3 -d " ")
+version=${version//\'/}
 
 # 操作dmg
 mkdir -p dmg-releases
@@ -54,8 +52,6 @@ if [ -d /Volumes/${title} ]; then
 fi
 hdiutil mount dmg-releases/pack.temp.dmg
 
-
-
 if ! [ -d /Volumes/${title} ]; then
   echo -e "\033[31m"
   echo "ERROR: /Volumes/${title} holder volume not mounted!"
@@ -73,41 +69,8 @@ fi
 image_width=`sips -g pixelWidth ${background_picture_name} | tail -n 1 | grep -oE '[0-9]+$'`
 image_height=`sips -g pixelHeight ${background_picture_name} | tail -n 1 | grep -oE '[0-9]+$'`
 
-# 打包Git版本Poi
-# git clone $project_git
-cd $project_name
-git submodule init
-git submodule update
-npm i
-./node_modules/.bin/bower install
-./node_modules/.bin/gulp
-cp default-config.cson config.cson
-cd ..
-
-# 压制zip
-# zip -r app.zip $project_name -x "*.DS_Store"
-
-# 压制asar
-npm install asar
-asar_bin='./node_modules/asar/bin/asar'
-$asar_bin pack $project_name app.asar
-
-# 清理git目录
-# rm -rf $project_name
-
-# 复制electron和app.zip
-cp -R $electron /Volumes/${title}/${application_name}
-
-# 复制zip
-# cp app.zip /Volumes/${title}/${application_name}/Contents/Resources/
-# rm app.zip
-
-# 复制asar
-cp app.asar /Volumes/${title}/${application_name}/Contents/Resources/
-rm app.asar
-
-# 复制文件夹
-# cp -R $project_name /Volumes/${title}/${application_name}/Contents/Resources/app
+# 复制app.zip
+cp -R $application_name /Volumes/${title}/
 
 
 rm -f /Volumes/${title}/.background/*
