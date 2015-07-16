@@ -38,7 +38,7 @@ electron_version=$(head -n 2 gulpfile.coffee|grep "ELECTRON_VERSION"|cut -f 3 -d
 electron_version=${electron_version//\'/}
 echo $electron_version
 version=$(head -n 1 gulpfile.coffee|cut -f 3 -d " ")
-version=${electron_version//\'/}
+version=${version//\'/}
 cd ..
 
 # 抓Electron
