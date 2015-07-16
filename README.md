@@ -1,5 +1,5 @@
 # build-poi
-Poi Building Automator
+A poi building automator
 
 # makePoi.sh
 
