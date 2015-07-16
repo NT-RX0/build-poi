@@ -3,21 +3,14 @@
 # set -e
 
 title="Poi-installer" # dmg 文件 mount 了之后在文件系统中显示的名称
-background_picture_name="poi-dmg-bg.png" # dmg 文件在 mount 了之后界面中显示的背景图片路径
 application_name="poi.app" # 应用程序的名称
-# Developer ID 证书的名称（名字的一部分即可，但是需要能在 Keychain Access 中唯一定位到该证书）
-developer_id="Mother Child Studio"
 electron="Electron.app" # electron.app路径名字
+
 project_git="https://github.com/yudachi/poi.git"
 electron_git="https://github.com/atom/electron"
 
-
 # 获取到项目名称，如果自动获取的项目名称不正确，可以手动进行指定
-# cd $(dirname $0)
 project_name="poi"
-# 后续需要根据 target 的名称查找最新的打包文件路径
-project_target_name=$project_name
-
 
 # 打包Git版本Poi
 git clone $project_git
