@@ -48,23 +48,26 @@ curl -O $electron_url
 unzip electron-v${electron_version}-darwin-x64.zip "Electron.app/*"
 
 # 复制electron和app.zip
-cp -R $electron ./${application_name}
+mv $electron ./${application_name}
 
 # 压制zip
 # zip -r app.zip $project_name -x "*.DS_Store"
 
 # 压制asar
-npm install asar
-asar_bin="./node_modules/asar/bin/asar"
-$asar_bin pack $project_name app.asar
+# mkdir ./node_modules
+# npm install asar
+# asar_bin="./node_modules/asar/bin/asar"
+# $asar_bin pack $project_name app.asar
+# rm -rf ./node_modules
 
 # 复制zip
-# cp app.zip /Volumes/${title}/${application_name}/Contents/Resources/
+# cp app.zip ./${application_name}/Contents/Resources/
 # rm app.zip
 
 # 复制asar
-cp app.asar ./${application_name}/Contents/Resources/
-rm app.asar
+# mv app.asar ./${application_name}/Contents/Resources/
+# rm app.asar
 
 # 复制文件夹
-# cp -R $project_name /Volumes/${title}/${application_name}/Contents/Resources/app
+# cp -R $project_name ./${application_name}/Contents/Resources/app
+mv $project_name ./${application_name}/Contents/Resources/app

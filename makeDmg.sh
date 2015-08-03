@@ -19,19 +19,23 @@ app_icon_top=120    # 应用的 logo 在窗口中的 y 坐标
 applications_link_left=315 # Application 文件链接在窗口中的 x 坐标
 applications_link_top=120  # Application 文件链接在窗口中的 y 坐标
 
+if [ ! -d "${application_name}" ]; then
+  exit 1;
+fi
+
 # 获取到项目名称，如果自动获取的项目名称不正确，可以手动进行指定
 cd $(dirname $0)
 project_name='poi'
 # 后续需要根据 target 的名称查找最新的打包文件路径
 project_target_name=$project_name
-version=$(head -n 1 ${project_name}/gulpfile.coffee|cut -f 3 -d " ")
+version=$(head -n 1 ${application_name}/Contents/Resources/app/gulpfile.coffee|cut -f 3 -d " ")
 version=${version//\'/}
 
 # 操作dmg
 mkdir -p dmg-releases
 rm -f dmg-releases/pack.temp.dmg
 # 创建一个临时的可读可写 dmg 文件，如果程序大小超过 100M，就需要调整这个参数
-hdiutil create -size 250M -volname "${title}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" dmg-releases/pack.temp.dmg
+hdiutil create -size 300M -volname "${title}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" dmg-releases/pack.temp.dmg
 
 function ejectDmgMount() {
   # 弹出临时的 dmg mount
@@ -129,7 +133,7 @@ function buildDmgForChannel() {
 
   # 导出只读的 dmg 文件
   today=`date '+%Y-%m-%d.%H'`
-  hdiutil convert ./dmg-releases/pack.temp.dmg -format UDZO -imagekey zlib-level=9 \
+  hdiutil convert ./dmg-releases/pack.temp.dmg -format UDZO -imagekey zlib-level=9 -ov \
   -o "./dmg-releases/${project_name}-${version}-${channel}-${today}.dmg"
 }
 
