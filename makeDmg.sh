@@ -3,11 +3,13 @@
 #!/bin/bash
 set -e
 
-title='Poi-installer' # dmg 文件 mount 了之后在文件系统中显示的名称
+
 background_picture_name='poi-dmg-bg.png' # dmg 文件在 mount 了之后界面中显示的背景图片路径
 application_name='poi.app' # 应用程序的名称
 # Developer ID 证书的名称（名字的一部分即可，但是需要能在 Keychain Access 中唯一定位到该证书）
 developer_id='Mother Child Studio'
+# 获取到项目名称，如果自动获取的项目名称不正确，可以手动进行指定
+project_name='poi'
 
 
 # dmg 窗口相关的一些设置，需要根据实际情况做变更
@@ -29,7 +31,7 @@ project_name='poi'
 # 后续需要根据 target 的名称查找最新的打包文件路径
 project_target_name=$project_name
 version=$(head -n 1 ${application_name}/Contents/Resources/app/gulpfile.coffee|cut -f 3 -d " ")
-version=${version//\'/}
+
 
 # 操作dmg
 mkdir -p dmg-releases
@@ -69,14 +71,17 @@ elif ! [ -w /Volumes/${title} ]; then
   exit 1
 fi
 
+
 # 获取到背景图片的大小，dmg mount 之后的窗口大小设定为背景图片的大小
 image_width=`sips -g pixelWidth ${background_picture_name} | tail -n 1 | grep -oE '[0-9]+$'`
 image_height=`sips -g pixelHeight ${background_picture_name} | tail -n 1 | grep -oE '[0-9]+$'`
 
-# 复制app.zip
+
+# 复制app
 cp -R $application_name /Volumes/${title}/
 
 
+# 添加背景图片
 rm -f /Volumes/${title}/.background/*
 mkdir -p /Volumes/${title}/.background
 cp ./${background_picture_name} /Volumes/${title}/.background/bg.png
@@ -137,8 +142,9 @@ function buildDmgForChannel() {
   -o "./dmg-releases/${project_name}-${version}-${channel}-${today}.dmg"
 }
 
+
 buildDmgForChannel osx64
-# buildDmgForChannel app01
 # 要增加一个渠道就在这里增加一行函数调用就可以了
+
 
 rm -f ./dmg-releases/pack.temp.dmg
